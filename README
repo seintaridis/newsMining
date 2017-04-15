@@ -1,2 +1,5 @@
-THIS A GIT REPOSITORY
-
+Install tools for ubuntu
+sudo apt-get install python-pip
+sudo pip install numpy
+sudo pip install pandas
+sudo pip install wordcloud
