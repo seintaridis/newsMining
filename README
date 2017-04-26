@@ -5,3 +5,4 @@ sudo pip install pandas
 sudo pip install wordcloud
 sudo pip install -U scikit-learn
 sudo pip install scipy
+sudo pip install nltk
