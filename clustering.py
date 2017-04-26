@@ -15,8 +15,8 @@ df = pd.read_csv('dataSets/train_set.csv', sep='\t')
 my_additional_stop_words=['Antonia','Nikos','Nikolas']
 stop_words = ENGLISH_STOP_WORDS.union(my_additional_stop_words)
 count_vect = TfidfVectorizer    (stop_words=stop_words)
-count_vect.fit(df['Content'].head(10000))
-X_train_counts = count_vect.transform(df['Content'].head(10000))
+count_vect.fit(df['Content'].head(12266))
+X_train_counts = count_vect.transform(df['Content'].head(12266))
 
 svd = TruncatedSVD(n_components=5)
 X_train_counts = svd.fit_transform(X_train_counts)
