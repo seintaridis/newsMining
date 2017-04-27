@@ -12,7 +12,6 @@ from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 df = pd.read_csv('dataSets/train_set.csv', sep='\t')
 
 my_additional_stop_words=['said','th','month','much','thing','say','says'] # also: new, it's ?
-s?
 stop_words = ENGLISH_STOP_WORDS.union(my_additional_stop_words)
 
 # create dir for wordclouds if it doesn't exist
