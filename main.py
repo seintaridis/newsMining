@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import os
-import Image as img
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
