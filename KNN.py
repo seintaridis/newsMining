@@ -26,39 +26,43 @@ count_vect = TfidfVectorizer(stop_words=stop_words)
 count_vect.fit(df['Content'].head(100))
 svd = TruncatedSVD(n_components=5)
 svd.fit(count_vect.transform(df['Content'].head(100)))
-X_train_counts = count_vect.transform(df['Content'].head(100))
-#print euclidean_distances(X_train_counts[0],X_train_counts[1])
-#print euclidean_distances(X_train_counts[1],X_train_counts[0])
 
-#print euclidean_distances(X_train_counts[1],X_train_counts[2])
-
-
-
-# create list for distances and targets
-distances = []
-targets = []
-
-for i in range(X_train_counts.shape[0]):
-		# first we compute the euclidean distance
-		distance = euclidean_distances(X_train_counts[i],X_train_counts[1])
-		# add it to list of distances
-		distances.append([distance, i])
-
-	# sort the list
-distances = sorted(distances)
-
-print "our test is " + df["Category"].iloc[1]
-	# make a list of the k neighbors' targets
-for i in range(99):
-#    print df["Category"].iloc(2)
-#    print df["Category"].iloc(distances[i][1])
-    targets.append(df["Category"].iloc[distances[i][1]])
-	#index = distances[i][1]
-	#targets.append(X_train_counts[index])
+kf = KFold(n_splits=10)
+fold = 0
+for train_index, test_index in kf.split(df):
+    X_train_counts = count_vect.transform(df['Content'].iloc[train_index])
+    X_train_counts = np.add(X_train_counts, count_vect.transform(df['Title'].iloc[train_index]))
+    X_test_counts = count_vect.transform(df['Content'].iloc[test_index])
+    X_test_counts = np.add(X_test_counts, count_vect.transform(df['Title'].iloc[test_index]))
+    X_train_counts = svd.transform(X_train_counts)
+    X_test_counts = svd.transform(X_test_counts)
 
 
-	# return most common target
-print targets
-c = Counter(targets)
-print c.most_common(1)
-#    print targets
+    # X_train_counts = count_vect.transform(df['Content'].head(100))
+    #print euclidean_distances(X_train_counts[0],X_train_counts[1])
+    #print euclidean_distances(X_train_counts[1],X_train_counts[0])
+
+    #print euclidean_distances(X_train_counts[1],X_train_counts[2])
+
+
+
+    yPred = []
+    for test, i in enumerate(test_index):
+        # create list for distances and targets
+        distances = euclidean_distances(X_train_counts, [X_test_counts[test]])
+        distances = zip(distances, df["Category"].iloc[train_index])
+
+        # sort the list
+        distances.sort()
+
+        # print "our test is " + df["Category"].iloc[i]
+        # make a list of the k neighbors' targets
+        targets = [distances[x][1] for x in range(5)]
+
+        # print targets
+        c = Counter(targets)
+        # print c.most_common(1)
+        #    print targets
+        yPred.append(c.most_common(1)[0][0])
+
+    print(classification_report(yPred,df['Category'].iloc[test_index], target_names=df.Category.unique()))

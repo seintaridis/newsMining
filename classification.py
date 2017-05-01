@@ -60,6 +60,7 @@ for train_index, test_index in kf.split(df):
      X_test_counts = svd.transform(X_test_counts)
      clf_cv = RandomForestClassifier(n_estimators=5).fit(X_train_counts,df['Category'].iloc[train_index])
      yPred = clf_cv.predict(X_test_counts)
+     print yPred
      fold += 1
      print "Fold " + str(fold)
      print(classification_report(yPred,df['Category'].iloc[test_index], target_names=df.Category.unique()))
