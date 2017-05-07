@@ -21,14 +21,14 @@ df = pd.read_csv('dataSets/train_set.csv', sep='\t')
 
 # remove stop words
 
-my_additional_stop_words=['said','th','month','much','thing','say','says'] 
+my_additional_stop_words=['said','th','month','much','thing','say','says']
 stop_words = ENGLISH_STOP_WORDS.union(my_additional_stop_words)
 
 # create counter and idf vectors
 
 count_vect = TfidfVectorizer    (stop_words=stop_words)
-count_vect.fit(df['Content'].head(1000)) #12266
-X_train_counts = count_vect.transform(df['Content'].head(1000))
+count_vect.fit(df['Content']) #12266
+X_train_counts = count_vect.transform(df['Content']
 
 # reduce size of vector with LSI
 
@@ -36,7 +36,7 @@ svd = TruncatedSVD(n_components=5)
 X_train_counts = svd.fit_transform(X_train_counts)
 
 
-# Clustering 
+# Clustering
 
 kclusterer = KMeansClusterer(num_means = 5, distance=cosine_distance, repeats=25, avoid_empty_clusters= True)
 clusters = kclusterer.cluster(X_train_counts, assign_clusters=True)
@@ -77,7 +77,7 @@ print "\nWords in clusters per category:\n", Matrix
 rowsum = nmp.sum(Matrix, axis=1)
 # print "rowsum:\n", rowsum
 
-for i in range(w):	
+for i in range(w):
 	for j in range(h):
 		x  = Matrix[i][j] / rowsum[i]
 		Matrix[i][j] = float("{0:.2f}".format(x))
@@ -102,4 +102,3 @@ df_cluster = pd.DataFrame(Matrix, index = labels_sorted, columns = categories_ma
 
 df_cluster.to_csv('clustering_KMeans.csv', sep='\t')
 plt.show()
-
