@@ -1,7 +1,11 @@
 import csv
+import os
 
 
 def writeStats(accuracyArray,precisionArray,recallArray,fmeasureArray,aucArray):
+    outputDir = "output/"
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
     with open('output/EvaluationMetric_10fold.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -19,6 +23,9 @@ def writeStats(accuracyArray,precisionArray,recallArray,fmeasureArray,aucArray):
 
 
 def createTestSetCategoryCSV(id,predCategories):
+    outputDir = "output/"
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
     with open('output/testSet_categories.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter='\t',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
