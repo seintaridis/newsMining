@@ -26,6 +26,11 @@ from sklearn.metrics import f1_score
 
 classification_method_array=['naiveBayes','RandomForest','SVM','KNN']
 
+
+def panda_read_csv(csv_title,delimiter):
+    df = pd.read_csv(csv_title, sep=delimiter)
+    return df
+
 def knn(test_index,X_train_counts,X_test_counts,train_index):
     yPred = []
     for test, i in enumerate(test_index):
@@ -62,6 +67,10 @@ def classificationMethod(method,X_train_counts,X_test_counts,category_index,trai
         return knn(test_index,X_train_counts,X_test_counts,train_index)
     yPred = clf_cv.predict(X_test_counts)#after training  try to predi
     return yPred;
+
+
+
+
 
 
 style.use("ggplot")
