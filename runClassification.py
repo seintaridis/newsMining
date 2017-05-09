@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -17,6 +18,9 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics.pairwise import euclidean_distances
 from collections import Counter
+import matplotlib.pyplot as plt
+from matplotlib import style
+style.use("ggplot")
 
 
 
@@ -58,7 +62,8 @@ def knn(X_train_counts,X_test_counts,categories):
 
 def classificationMethod(method,X_train_counts,X_test_counts,categories,train_index,test_index):
     yPred=None;
-    C = 3.0
+    C = 2.0
+
     if method == 'naiveBayes':
         clf_cv = GaussianNB().fit(X_train_counts,categories)
     elif method == 'RandomForest':
@@ -77,7 +82,7 @@ def findCategories(df,test_df):
     count_vect = TfidfVectorizer(stop_words=stop_words)
     #count_vect = CountVectorizer(stop_words=stop_words)
     count_vect.fit(df['Content'])
-    svd = TruncatedSVD(n_components=40)
+    svd = TruncatedSVD(n_components=400)
     svd.fit(count_vect.transform(df['Content']))
     X_train_counts = count_vect.transform(df['Content'])
     X_train_counts = np.add(X_train_counts, count_vect.transform(df['Title']))
@@ -113,7 +118,7 @@ def crossValidation(df,method,n_components):
             runAllClassificationMethods(df,nFolds,X_train_counts,X_test_counts,train_index,test_index)
         else:
             yPred = classificationMethod(method,X_train_counts,X_test_counts,df['Category'].iloc[train_index],train_index,test_index)
-            print(classification_report(yPred,df['Category'].iloc[test_index], target_names=df.Category.unique()))
+            #print(classification_report(yPred,df['Category'].iloc[test_index], target_names=df.Category.unique()))
             avgAccuracy+=accuracy_score(df['Category'].iloc[test_index],yPred)
         fold += 1
     if method=='ALL':
@@ -121,6 +126,7 @@ def crossValidation(df,method,n_components):
     avgAccuracy=avgAccuracy/nFolds
     print "the average accuracy of method "+ method
     print avgAccuracy
+    return avgAccuracy
 
 
 def runAllClassificationMethods(df,nFolds,X_train_counts,X_test_counts,train_index,test_index):
@@ -142,6 +148,25 @@ def produceStats(nFolds):
     writeStats(averageAccurracyArray,averagePrecisionArray,averageRecallArray,averageFmeasureArray,averageAUCarray)
 
 
+def produceSVMstats(df):
+    componentsList = [300,400] #to 120 dinei tis kaliteres times
+    #componentsList = [100,110,120,130]
+    accuracyList=[]
+    for idx,value in enumerate(componentsList):
+        accuracyList.append(crossValidation(df,'SVM',value))
+    print accuracyList
+    plt.ylim([0.5, 1.0])
+    plt.xlim([0.0,120.0])
+    plt.xlabel('Components')
+    plt.ylabel('Accuracy')
+    width = 1
+    plt.bar(componentsList,accuracyList, width, color="blue")
+    #plt.hist(componentsList,accuracyList)
+    #plt.plot(componentsList,accuracyList,'ro')
+    plt.savefig('output/LSIcomponentsAccuracy1')
+    plt.show()
+
+
 
 
 averageAccurracyArray=[0,0,0,0]
@@ -149,7 +174,11 @@ averagePrecisionArray=[0,0,0,0]
 averageRecallArray=[0,0,0,0]
 averageFmeasureArray=[0,0,0,0]
 averageAUCarray=[0,0,0,0]
+outputDir = "output/"
+if not os.path.exists(outputDir):
+    os.makedirs(outputDir)
 df = pd.read_csv('dataSets/train_set.csv', sep='\t')
-crossValidation(df.head(100),'KNN',40)   #ALL TO RUN ALL METHODS OTHERWIRSE PUT ONE METHOD OF THESE classification_method_array=['naiveBayes','RandomForest','SVM','KNN']
+#crossValidation(df.head(1000),'SVM',40)   #ALL TO RUN ALL METHODS OTHERWIRSE PUT ONE METHOD OF THESE classification_method_array=['naiveBayes','RandomForest','SVM','KNN']
+#produceSVMstats(df)
 testdf =pd.read_csv('dataSets/test_set.csv', sep='\t')
 findCategories(df,testdf)
