@@ -64,7 +64,7 @@ def classificationMethod(method,X_train_counts,X_test_counts,categories,train_in
     if method == 'naiveBayes':
         clf_cv = GaussianNB().fit(X_train_counts,categories)
     elif method == 'RandomForest':
-        clf_cv = RandomForestClassifier(n_estimators=5).fit(X_train_counts,categories)
+        clf_cv = RandomForestClassifier(n_estimators=128).fit(X_train_counts,categories)# the best result for random forest
     elif method == 'SVM':
         clf_cv = svm.SVC(kernel='linear', C=C,gamma=0.7).fit(X_train_counts,categories)
     elif method == 'KNN':
@@ -146,7 +146,7 @@ def produceStats(nFolds):
 
 
 def produceSVMstats(df):
-    componentsList = [2,3,4,5,6,10,20,30,40,50,60,70,80,90,100,300,400] #to 120 dinei tis kaliteres times #componentsList = [100,110,120,130]
+    componentsList = [2,3,4,5,6,10,20,30,40,50,60,70,80,90,100,300,400]  #componentsList = [100,110,120,130]
     accuracyList=[]
     for idx,value in enumerate(componentsList):
         accuracyList.append(crossValidation(df,'SVM',value))
@@ -234,7 +234,7 @@ outputDir = "output/"
 if not os.path.exists(outputDir):
     os.makedirs(outputDir)
 df = pd.read_csv('dataSets/train_set.csv', sep='\t')
-crossValidation(df,'SVM',40,titleWeight=1.3)   #ALL TO RUN ALL METHODS OTHERWIRSE PUT ONE METHOD OF THESE classification_method_array=['naiveBayes','RandomForest','SVM','KNN']
+crossValidation(df,'RandomForest',40,titleWeight=1.1)   #ALL TO RUN ALL METHODS OTHERWIRSE PUT ONE METHOD OF THESE classification_method_array=['naiveBayes','RandomForest','SVM','KNN']
 #produceSVMstats(df)
 #testdf =pd.read_csv('dataSets/test_set.csv', sep='\t')
 #findCategories(df,testdf)
