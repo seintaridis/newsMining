@@ -6,3 +6,5 @@ sudo pip install wordcloud
 sudo pip install -U scikit-learn
 sudo pip install scipy
 sudo pip install nltk
+
+Dataset should be located in a directory named 'dataSets' in the current directory.
